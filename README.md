@@ -69,10 +69,10 @@ npm i -D @pycolors/typescript-config
 
 ## What's included
 
--   **base** --- strict modern defaults (ES2022 + DOM), NodeNext
+-   **base** — strict modern defaults (ES2022 + DOM), NodeNext
     resolution
--   **nextjs** --- Next plugin + Bundler resolution + `noEmit`
--   **react-library** --- React JSX runtime for libraries
+-   **nextjs** — Next plugin + Bundler resolution + `noEmit`
+-   **react-library** — React JSX runtime for libraries
 
 ------------------------------------------------------------------------
 
