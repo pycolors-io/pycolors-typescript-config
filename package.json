@@ -1,8 +1,47 @@
 {
-  "name": "@repo/typescript-config",
-  "version": "0.0.0",
-  "private": true,
+  "name": "@pycolors/typescript-config",
+  "version": "1.0.0",
+  "private": false,
   "license": "MIT",
+  "description": "Production-ready TypeScript tsconfig presets for Next.js apps, React libraries and modern monorepos.",
+  "homepage": "https://pycolors.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pycolors-io/pycolors-typescript-config"
+  },
+  "bugs": {
+    "url": "https://github.com/pycolors-io/pycolors-typescript-config/issues"
+  },
+  "keywords": [
+    "typescript",
+    "tsconfig",
+    "nextjs",
+    "react",
+    "monorepo",
+    "turborepo",
+    "eslint",
+    "developer-experience",
+    "dx",
+    "frontend",
+    "design-system",
+    "starter",
+    "boilerplate",
+    "saas",
+    "pycolors"
+  ],
+  "files": [
+    "base.json",
+    "nextjs.json",
+    "react-library.json",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "exports": {
+    "./base": "./base.json",
+    "./nextjs": "./nextjs.json",
+    "./react-library": "./react-library.json"
+  },
   "publishConfig": {
     "access": "public"
   },
