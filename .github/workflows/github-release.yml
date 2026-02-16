@@ -1,0 +1,83 @@
+name: GitHub Release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "package.json"
+      - "CHANGELOG.md"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: github-release
+  cancel-in-progress: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Read version from package.json
+        id: v
+        run: |
+          set -e
+          VERSION="$(node -p "require('./package.json').version")"
+          echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Version: $VERSION"
+
+      - name: Skip if tag already exists (no-op)
+        shell: bash
+        run: |
+          set -e
+          TAG="v${{ steps.v.outputs.VERSION }}"
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "✅ Tag $TAG already exists. Skipping."
+            exit 0
+          fi
+
+      - name: Create tag
+        run: |
+          set -e
+          TAG="v${{ steps.v.outputs.VERSION }}"
+          git tag "$TAG"
+          git push origin "$TAG"
+
+      - name: Build release notes from CHANGELOG.md
+        id: notes
+        shell: bash
+        run: |
+          set -e
+          VERSION="${{ steps.v.outputs.VERSION }}"
+          # Extract section starting at "## <version>" until next "## "
+          NOTES="$(awk -v ver="## ${VERSION}" '
+            $0 == ver {flag=1; next}
+            /^## / {if(flag){exit}}
+            flag {print}
+          ' CHANGELOG.md | sed '/^[[:space:]]*$/d')"
+
+          if [ -z "$NOTES" ]; then
+            NOTES="Release v${VERSION}"
+          fi
+
+          {
+            echo "NOTES<<EOF"
+            echo "$NOTES"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          TAG="v${{ steps.v.outputs.VERSION }}"
+          gh release create "$TAG" \
+            --title "$TAG" \
+            --notes "${{ steps.notes.outputs.NOTES }}"
